@@ -10,7 +10,7 @@ NUM_DEVICES=$(($(adb devices -l | wc -l) - 2))
 printDevices ()
 {
 	DEVICE_LIST=($(adb devices -l | grep "model" | cut -d':' -f 4 | sed 's/device//'))
-	
+
 	for ((i=0; i<$NUM_DEVICES; i++)); do
   		 echo -e "\t$(($i+1)) ${DEVICE_LIST[$i]}"
 	done
@@ -26,7 +26,7 @@ selectDevice ()
 			break
 		elif [ "$SELECTION" == "e"  ]
 		then
-			exit			
+			exit
 		else
 			echo "Please enter a number within range. Or enter 'e' to exit."
 		fi
@@ -53,7 +53,7 @@ decide ()
 connectDevice ()
 {
 	IP_ADDRESS=`adb -s $SERIAL_NO shell ifconfig wlan0 | grep "inet addr:" | cut -d':' -f 2 | awk '{ print $1 }'`
-	SUCCESS_MESSAGE="connected to $IP_ADDRESS:$PORT"	
+	SUCCESS_MESSAGE="connected to $IP_ADDRESS:$PORT"
 
 	adb tcpip $PORT
 	TRY_CONN=`adb connect $IP_ADDRESS:$PORT`
@@ -67,22 +67,22 @@ connectDevice ()
 }
 
 case "$NUM_DEVICES" in
-    0)
-        echo "No android device found"	
-	exit
-        ;;
-         
-    1)	
-        DEVICE_NAME=`adb devices -l | grep "model" | cut -d':' -f 4 | sed 's/device//'`
-	SERIAL_NO=`adb get-serialno`
+	0)
+		echo "No android device found"
+		exit
+    ;;
 
-	decide       
-	;;
-         
-    *)
-        echo "Multiple Devices found"
-	printDevices
-	selectDevice 
-	decide 
-	;;
+  1)
+    DEVICE_NAME=`adb devices -l | grep "model" | cut -d':' -f 4 | sed 's/device//'`
+		SERIAL_NO=`adb get-serialno`
+
+		decide
+		;;
+
+  *)
+    echo "Multiple Devices found"
+		printDevices
+		selectDevice
+		decide
+		;;
 esac
